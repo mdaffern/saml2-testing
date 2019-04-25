@@ -4,8 +4,10 @@
   "description": "Cli tools that test various aspects of saml2 integrations",
   "scripts": {
     "lint": "tslint --project . --format msbuild",
-    "start:idp": "ts-node ./src/entry/fake-idp-listen.ts",
-    "start:sp": "ts-node ./src/entry/fake-sp-listen.ts",
+    "test": "TSCONFIG=ts-config.json lab",
+    "start": "ts-node ./src/app/entry/all.ts",
+    "start:idp": "ts-node ./src/app/entry/fake-idp-listen.ts",
+    "start:sp": "ts-node ./src/app/entry/fake-sp-listen.ts",
     "build": "tsc --pretty",
     "typecheck": "tsc --pretty --noEmit",
     "validate": "npm ls"
@@ -13,16 +15,23 @@
   "author": "Griffingj",
   "license": "UNLICENSED",
   "devDependencies": {
-    "typescript": "^3.4.5",
-    "tslint": "^5.16.0"
+    "@types/chai": "^4.1.7",
+    "@types/hapi": "^18.0.1",
+    "@types/joi": "^14.3.3",
+    "@types/lab": "^11.1.0",
+    "@types/lodash": "^4.14.123",
+    "@types/node": "^11.13.7",
+    "@types/sinon": "^7.0.11",
+    "typescript": "^3.0.3",
+    "tslint": "^5.16.0",
+    "chai": "^4.2.0",
+    "lab": "^18.0.2",
+    "lab-transform-typescript": "^3.0.1",
+    "ts-node": "^8.1.0"
   },
   "dependencies": {
     "@socialtables/saml-protocol": "^0.3.6",
-    "@types/hapi": "^18.0.1",
-    "@types/joi": "^14.3.3",
-    "@types/lodash": "^4.14.123",
     "axios": "^0.18.0",
-    "ejs": "^2.6.1",
     "fast-xml-parser": "^3.12.16",
     "hapi": "^18.1.0",
     "hapi-swagger": "^9.4.2",
@@ -31,7 +40,8 @@
     "joi": "^14.3.1",
     "lodash": "^4.17.11",
     "replify": "^1.2.0",
-    "ts-node": "^8.1.0",
+    "sinon": "^7.3.2",
+    "uuid": "^3.3.2",
     "vision": "^5.4.4"
   }
 }

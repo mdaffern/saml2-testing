@@ -1,9 +1,9 @@
 import { ServerRoute } from 'hapi';
+import * as Status from 'http-status';
 import * as Joi from 'joi';
 import { get } from 'lodash';
 import { inspect } from 'util';
 import { SamlResponseUnpacked } from '../common-types';
-import * as Status from 'http-status';
 
 export function makeRoutes(serviceProvider): ServerRoute[] {
   return [

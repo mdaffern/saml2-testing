@@ -70,4 +70,4 @@ export function configFromFiles(metadataPath, privateKeyPath, kind: Kind) {
     .then(([metadataJson, privateKey]) => {
       return metadataToConfig(metadataJson, privateKey, kind);
     });
-};
+}

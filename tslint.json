@@ -13,6 +13,8 @@
     "triple-equals": false,
     "no-unused-expression": false,
     "interface-name": false,
-    "space-before-function-paren": false
+    "space-before-function-paren": false,
+    "arrow-parens": false,
+    "ordered-imports": false
   }
 }

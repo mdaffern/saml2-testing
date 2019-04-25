@@ -1,6 +1,6 @@
+import * as Status from 'http-status';
 import * as Joi from 'joi';
 import { get } from 'lodash';
-import * as Status from 'http-status';
 
 export function makeRoutes(identityProvider) {
   return [

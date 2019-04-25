@@ -1,4 +1,6 @@
+import { Server } from 'hapi';
 import { Url } from 'url';
+import { User } from './user-routes';
 
 export type Kind = 'idp' | 'sp';
 
@@ -32,13 +34,18 @@ export interface SamlResponse {
   url: Url;
 }
 
-export interface IdProvider {
-  produceSuccessResponse(sp: SamlConfig, respondToId: string, nameId: string, attributes: any): Promise<SamlResponse>;
-}
-
 export interface SamlResponseUnpacked {
   attributes: any[];
   idp: SamlConfig;
   nameID: string;
   nameIDFormat: string;
+}
+
+export interface Db {
+  users: Map<string, User>;
+}
+
+export interface CommonContext {
+  httpServer: Server;
+  db: Db;
 }

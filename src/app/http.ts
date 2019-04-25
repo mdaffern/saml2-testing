@@ -5,7 +5,7 @@ import * as Path from 'path';
 import * as Vision from 'vision';
 import { makeUserRoutes } from './user-routes';
 
-export function makeServer(routes, port): Promise<Server> {
+export function makeServer(routes, port, db): Promise<Server> {
   const httpServer = new Server({
     port,
     routes: {
@@ -16,13 +16,9 @@ export function makeServer(routes, port): Promise<Server> {
     }
   });
 
-  const db = {
-    users: new Map()
-  };
-
   return httpServer
     .register([
-      { plugin: Inert },
+      { plugin: Inert } as any,
       { plugin: Vision },
       {
         plugin: HapiSwagger,
