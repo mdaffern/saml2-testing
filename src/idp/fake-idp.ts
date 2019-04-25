@@ -1,13 +1,13 @@
 import { IdentityProvider } from '@socialtables/saml-protocol';
+import Axios from 'axios';
 import { Server } from 'hapi';
 import * as path from 'path';
+import * as qs from 'querystring';
+import { format } from 'url';
 import { IdProvider, SamlConfig, SamlResponse } from '../common-types';
 import { makeServer } from '../http';
 import { configFromFiles } from '../parse-saml';
 import { makeRoutes } from './routes';
-import Axios from 'axios';
-import * as qs from 'querystring';
-import { format } from 'url';
 
 export interface IdpContext {
   idp: {
@@ -54,6 +54,7 @@ export function boot(): Promise<IdpContext> {
                 const attributes = { name: 'john' };
                 // This is for the flow where the sp sends an authn request first
                 // this would be used to correlate request with response
+                // this matches the hardcoded default respondToId in fake-sp
                 const respondToId = '1234';
 
                 return identityProvider
@@ -65,7 +66,7 @@ export function boot(): Promise<IdpContext> {
                       },
                     });
                   })
-                  .then(resp => resp.statusText)
+                  .then((resp) => resp.statusText)
                   .catch((thrown) => console.log(`t >>> ${require('util').inspect(thrown)}`));
               }
             }

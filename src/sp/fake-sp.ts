@@ -48,7 +48,7 @@ export function boot(): Promise<SpContext> {
           return Promise.resolve();
         },
         verifyRequestID(requestId, idpConfig) {
-          if ("1234" == requestId) { // this matches the hardcoded default respondToId
+          if ('1234' == requestId) { // this matches the hardcoded default respondToId
             return Promise.resolve();
           }
 
