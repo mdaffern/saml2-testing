@@ -1,8 +1,7 @@
 {
   "name": "saml2-testing",
   "version": "0.1.0",
-  "description": "A cli tool that fires off fake saml idp requests for testing",
-  "main": "index.js",
+  "description": "Cli tools that test various aspects of saml2 integrations",
   "scripts": {
     "lint": "tslint --project . --format msbuild",
     "start:idp": "ts-node ./src/entry/fake-idp-listen.ts",
