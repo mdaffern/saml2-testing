@@ -1,8 +1,9 @@
-import { CommonContext, SamlConfig } from '../common-types';
-import { makeDb } from '../db';
-import { makeRoutes } from './routes';
-import { makeServer } from '../http';
-import { makeSpBinding, SpInterface } from './spBinding';
+import { CommonContext } from '../common-types';
+import { makeDb } from '../db/db';
+import { makeServer } from '../http/http';
+import { makeSessionRoutes } from './session-routes';
+import { makeSpBinding, SpInterface } from './sp-binding';
+import { makeSsoRoutes } from './sso-routes';
 
 export interface SpContext {
   sp: {
@@ -13,9 +14,10 @@ export interface SpContext {
 
 export async function boot(): Promise<SpContext> {
   const db = makeDb();
-  const spBinding = await makeSpBinding();
-  const routes = makeRoutes(spBinding.sp);
-  const httpServer = await makeServer(routes, 8080, db);
+  const spBinding = await makeSpBinding(db);
+  const ssoRoutes = makeSsoRoutes(db, spBinding.sp);
+  const sessionRoutes = makeSessionRoutes(db, spBinding);
+  const httpServer = await makeServer([...ssoRoutes, ...sessionRoutes], 8080, db, 'sp');
 
   return {
     sp: {

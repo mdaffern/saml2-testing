@@ -1,11 +1,8 @@
 import * as path from 'path';
-import { CommonContext, SamlConfig } from '../common-types';
-import { configFromFiles } from '../parse-saml';
+import { configFromFiles } from '../saml/parse-saml';
+import { Db, SamlConfig, SamlResponseUnpacked } from '../common-types';
 import { isEqual as deepEqual } from 'lodash';
-import { makeDb } from '../db';
-import { makeRoutes } from './routes';
-import { makeServer } from '../http';
-import { Server } from 'hapi';
+import { secret } from '../app-const';
 import { ServiceProvider } from '@socialtables/saml-protocol';
 
 const resourcePath = path.join(__dirname, '..', '..', '..', 'resources');
@@ -15,9 +12,9 @@ const spMetaPath = path.join(resourcePath, 'sp1', 'sp-metadata.xml');
 const spKeyPath = path.join(resourcePath, 'sp1', 'key.pem');
 
 export interface SpInterface {
-  produceAuthnRequest(idp: SamlConfig): Promise<void>;
+  produceAuthnRequest(idp: SamlConfig): Promise<any>;
   consumePostResponse(formParams: any): Promise<void>;
-  consumeRedirectResponse(queryParams: any): Promise<void>;
+  consumeRedirectResponse(queryParams: any): Promise<SamlResponseUnpacked>;
 }
 
 export interface SpBinding {
@@ -26,7 +23,7 @@ export interface SpBinding {
   spConfig: SamlConfig;
 }
 
-export async function makeSpBinding(): Promise<SpBinding> {
+export async function makeSpBinding(db: Db): Promise<SpBinding> {
   const [idp, sp] = await Promise.all([
     configFromFiles(idpMetaPath, idpKeyPath, 'idp'),
     configFromFiles(spMetaPath, spKeyPath, 'sp'),
@@ -36,9 +33,7 @@ export async function makeSpBinding(): Promise<SpBinding> {
     [idp.entityID, idp]
   ]);
 
-  const requestLookup = new Map<string, SamlConfig>();
-
-  return new ServiceProvider(sp, {
+  const spObj = new ServiceProvider(sp, {
     getIdentityProvider(entityId) {
       const config = idpLookup.get(entityId);
 
@@ -49,24 +44,30 @@ export async function makeSpBinding(): Promise<SpBinding> {
       }
     },
     storeRequestID(requestId, idpConfig: SamlConfig) {
-      requestLookup.set(requestId, idpConfig);
+      db.ssoRequests.set(requestId, idpConfig);
       return Promise.resolve();
     },
     verifyRequestID(requestId, idpConfig) {
-      if ('1234' == requestId) { // this matches the hardcoded default respondToId
+      if (secret == requestId) { // this matches the hardcoded default respondToId
         return Promise.resolve();
       }
 
-      if (idpConfig && deepEqual(idpConfig, requestLookup.get(requestId))) {
+      if (idpConfig && deepEqual(idpConfig, db.ssoRequests.get(requestId))) {
         return Promise.resolve();
       }
       return Promise.reject();
     },
     invalidateRequestID(requestId) {
-      requestLookup.delete(requestId);
+      db.ssoRequests.delete(requestId);
       return Promise.resolve();
     }
   });
+
+  return {
+    sp: spObj,
+    idpConfig: idp,
+    spConfig: sp
+  };
 }
 
 // ServiceProvider.prototype.produceAuthnRequest = function(idp) {

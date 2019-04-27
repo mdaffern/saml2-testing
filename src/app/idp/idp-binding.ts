@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { configFromFiles } from '../parse-saml';
+import { configFromFiles } from '../saml/parse-saml';
 import { IdentityProvider } from '@socialtables/saml-protocol';
 import { SamlConfig, SamlResponse } from '../common-types';
 
@@ -29,7 +29,7 @@ export async function makeIdpBinding(): Promise<IdpBinding> {
   ]);
 
   const spLookup = new Map<string, SamlConfig>([
-    [idp.entityID, idp]
+    [sp.entityID, sp]
   ]);
 
   const idpObj = new IdentityProvider(idp, {
@@ -37,9 +37,9 @@ export async function makeIdpBinding(): Promise<IdpBinding> {
       const config = spLookup.get(entityId);
 
       if (config) {
-        Promise.resolve(config);
+        return Promise.resolve(config);
       } else {
-        Promise.reject();
+        return Promise.reject();
       }
     }
   });

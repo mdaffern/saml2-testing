@@ -8,6 +8,7 @@ module.exports = {
   reporter: 'console',
   shuffle: true,
   sourcemaps: true,
+  leaks: false,
   timeout: 5000,
   transform: './node_modules/lab-transform-typescript',
   verbose: true

@@ -4,10 +4,10 @@
   "description": "Cli tools that test various aspects of saml2 integrations",
   "scripts": {
     "lint": "tslint --project . --format msbuild",
-    "test": "TSCONFIG=ts-config.json lab",
+    "test": "lab",
     "start": "ts-node ./src/app/entry/all.ts",
-    "start:idp": "ts-node ./src/app/entry/fake-idp-listen.ts",
-    "start:sp": "ts-node ./src/app/entry/fake-sp-listen.ts",
+    "start:idp": "ts-node ./src/app/entry/idp-listen.ts",
+    "start:sp": "ts-node ./src/app/entry/sp-listen.ts",
     "build": "tsc --pretty",
     "typecheck": "tsc --pretty --noEmit",
     "validate": "npm ls"
@@ -30,8 +30,11 @@
     "ts-node": "^8.1.0"
   },
   "dependencies": {
+    "@hapi/cookie": "^10.1.0",
     "@socialtables/saml-protocol": "^0.3.6",
     "axios": "^0.18.0",
+    "boom": "^7.3.0",
+    "ejs": "^2.6.1",
     "fast-xml-parser": "^3.12.16",
     "hapi": "^18.1.0",
     "hapi-swagger": "^9.4.2",

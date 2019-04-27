@@ -1,0 +1,14 @@
+<html>
+  <head>
+  </head>
+  <body style="display: flex; align-items: center; justify-content: center">
+    <div>
+      <form id="SamlForm" style="display: none;" action="<%- url %>" method="POST">
+        <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- SAMLResponse %>">
+      </form>
+      <script>
+        document.getElementById('SamlForm').submit();
+      </script>
+    </div>
+  </body>
+</html>

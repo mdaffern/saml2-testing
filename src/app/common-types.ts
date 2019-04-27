@@ -1,6 +1,7 @@
 import { Server } from 'hapi';
 import { Url } from 'url';
 import { User } from './user-routes';
+import { UserDao } from './db/db';
 
 export type Kind = 'idp' | 'sp';
 
@@ -41,8 +42,19 @@ export interface SamlResponseUnpacked {
   nameIDFormat: string;
 }
 
+export type Predicate<T> = (i: T) => boolean;
+
+export interface Dao<T> {
+  findOne(p: Predicate<T>): T | undefined;
+  findAll(p: Predicate<T>): T[];
+  add(i: T): Dao<T>;
+  remove(i: T): Dao<T>;
+}
+
 export interface Db {
-  users: Map<string, User>;
+  users: Dao<User>;
+  ssoRequests: Map<string, SamlConfig>;
+  sessionStorage: Map<string, any>;
 }
 
 export interface CommonContext {

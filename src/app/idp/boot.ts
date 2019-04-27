@@ -2,14 +2,16 @@ import * as qs from 'querystring';
 import Axios from 'axios';
 import { CommonContext, SamlConfig, SamlResponse } from '../common-types';
 import { format } from 'url';
-import { makeDb } from '../db';
-import { makeIdpBinding } from './idpBinding';
-import { makeRoutes } from './routes';
-import { makeServer } from '../http';
+import { makeDb } from '../db/db';
+import { makeIdpBinding } from './idp-binding';
+import { makeServer } from '../http/http';
+import { makeSessionRoutes } from './session-routes';
+import { makeSsoRoutes } from './sso-routes';
+import { secret } from '../app-const';
 
 export interface IdpInterface {
   consumePostAuthnRequest(formParams: any): Promise<any>;
-  consumeRedirectAuthnRequest(): Promise<any>;
+  consumeRedirectAuthnRequest(queryParams): Promise<any>;
   produceSuccessResponse(sp: SamlConfig, respondToId: string, nameId: string, attributes: any): Promise<SamlResponse>;
   produceFailureResponse(sp: SamlConfig, respondToId: string, errorMessage: any): Promise<void>;
 }
@@ -22,10 +24,12 @@ export interface IdpContext {
 }
 
 export async function boot(): Promise<IdpContext> {
-  const idpBinding = await makeIdpBinding();
   const db = makeDb();
-  const routes = makeRoutes(idpBinding.idp);
-  const httpServer = await makeServer(routes, 7001, db);
+  const idpBinding = await makeIdpBinding();
+  const ssoRoutes = makeSsoRoutes(idpBinding.idp);
+  const sessionRoutes = makeSessionRoutes(db, idpBinding);
+
+  const httpServer = await makeServer([...ssoRoutes, ...sessionRoutes], 7001, db, 'idp');
 
   return {
     idp: {
@@ -33,11 +37,11 @@ export async function boot(): Promise<IdpContext> {
       db,
       httpServer,
       sendAssertion(nameId = 'e69da125-4e1b-423c-ba92-1252c28a3066') {
-        const attributes = { name: 'john' };
+        const attributes = db.users.findOne(u => u.uuid == nameId);
         // This is for the flow where the sp sends an authn request first
         // this would be used to correlate request with response
         // this matches the hardcoded default respondToId in fake-sp
-        const respondToId = '1234';
+        const respondToId = secret;
 
         return idpBinding.idp
           .produceSuccessResponse(idpBinding.spConfig, respondToId, nameId, attributes)
@@ -47,9 +51,7 @@ export async function boot(): Promise<IdpContext> {
                 'Content-Type': 'application/x-www-form-urlencoded',
               },
             });
-          })
-          .then((resp) => resp.statusText)
-          .catch((thrown) => console.log(`t >>> ${require('util').inspect(thrown)}`));
+          });
       }
     }
   };

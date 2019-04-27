@@ -1,11 +1,14 @@
 import * as Joi from 'joi';
 import * as Status from 'http-status';
 import { get } from 'lodash';
-import { ServerRoute } from 'Hapi';
+import { ServerRoute } from 'hapi';
 
 export interface User {
+  id: number;
   name: string;
-  id: string;
+  uuid: string;
+  email: string;
+  hashword: number;
 }
 
 export function makeUserRoutes(db): ServerRoute[] {

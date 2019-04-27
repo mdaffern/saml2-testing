@@ -1,0 +1,174 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+
+      .form-signin {
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+        margin: auto;
+      }
+      .form-signin .checkbox {
+        font-weight: 400;
+      }
+      .form-signin .form-control {
+        position: relative;
+        box-sizing: border-box;
+        height: auto;
+        padding: 10px;
+        font-size: 16px;
+      }
+      .form-signin .form-control:focus {
+        z-index: 2;
+      }
+      .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    </style>
+    <style>
+      html {
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 100;
+      }
+
+      h2 {
+        font-weight: 100;
+      }
+
+      .icon {
+        border-radius: 5px;
+      }
+
+      .bar {
+        margin-top: 10px;
+      }
+
+      .idp {
+        cursor: pointer;
+        margin-bottom: 5px;
+      }
+
+      .idps {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .toast-anchor {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+
+      .bullet {
+        background-color: red;
+        height: 15px;
+        width: 15px;
+        border-radius: 50%;
+        margin: 1px 5px 0 0;
+      }
+    </style>
+    <script>
+      function post(url = ``, data = {}) {
+        return fetch(url, {
+          method: 'POST',
+          mode: 'same-origin',
+          cache: 'no-cache',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          redirect: 'follow',
+          body: JSON.stringify(data)
+        });
+      }
+
+      $(() => {
+        $('.btn.login').on('click', () => {
+          const username = $('#inputEmail').val();
+          const password = $('#inputPassword').val();
+          post('/session', { username, password })
+            .then(resp => {
+              if (resp.status < 300) {
+                location = '/resource';
+              }
+
+              if (resp.status >= 400 && resp.status < 500) {
+                $('.toast').toast('show');
+              }
+            });
+        });
+
+        $('.toast').toast({
+          animate: true,
+          autohide: true,
+          delay: 1000
+        });
+      })
+    </script>
+  </head>
+  <body class="text-center">
+    <main class="form-signin">
+      <img class="mb-4 icon" src="static/service-provider.png" alt="" width="200" height="200">
+      <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input type="text" id="inputEmail" name="username" class="form-control" placeholder="Email address" required="" autofocus="">
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required="">
+      <button class="btn btn-lg btn-primary btn-block login">Sign in (no saml)</button>
+      <div class="bar">
+        <h1 class="h4 mb-3 font-weight-normal">Sign in with IdP</h1>
+      </div>
+      <div class="idps">
+        <div class="idp-frame">
+          <a href="http://<%- samlAuthUrl %>">
+            <img class="icon idp" src="/static/identity-provider.png" height="80" width="80">
+          </a>
+          <p><small>Redirect Bind</small></p>
+        </div>
+      </div>
+      <p class="mt-5 mb-3 text-muted">© 2017-2019</p>
+    </main>
+    <div class="toast-anchor">
+      <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false">
+        <div class="toast-header">
+          <div class="bullet"></div>
+          <strong class="mr-auto">Error</strong>
+          <small>unauthorized</small>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          Invalid username or password.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

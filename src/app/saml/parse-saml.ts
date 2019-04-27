@@ -1,8 +1,8 @@
-import { parse } from 'fast-xml-parser';
-import { readFile as readFileCb } from 'fs';
 import { get } from 'lodash';
+import { Kind, SamlConfig } from '../common-types';
+import { parse } from 'fast-xml-parser';
 import { promisify } from 'util';
-import { Kind, SamlConfig } from './common-types';
+import { readFile as readFileCb } from 'fs';
 
 const readFile = promisify(readFileCb);
 
