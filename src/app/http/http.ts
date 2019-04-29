@@ -97,6 +97,15 @@ export async function makeServer(
       options: {
         auth: false
       }
+    }, {
+      method: 'GET',
+      path: '/',
+      handler: (request, h) => {
+        return h.redirect(request.auth.isAuthenticated ? '/resource' : 'login');
+      },
+      options: {
+        auth: { mode: 'try' }
+      }
     }
   ]);
 

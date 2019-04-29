@@ -121,8 +121,11 @@
         if (location.search) {
           const kvs = location.search.replace(/[?&]/g, ' ').trim().split(' ');
           const samlReqId = new Map(kvs.map(kv => kv.split('='))).get('samlReqId');
-          const input = '<input type="text" class="hidden" id="samlReqId" name="samlReqId" value="' + samlReqId + '">';
-          $('.form-signin').append(input);
+
+          if (samlReqId) {
+            const input = '<input type="text" class="hidden" id="samlReqId" name="samlReqId" value="' + samlReqId + '">';
+            $('.form-signin').append(input);
+          }
         }
 
         $('.btn.login').on('click', () => {

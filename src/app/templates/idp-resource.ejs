@@ -128,7 +128,7 @@
       }
       $(() => {
         $('.logout').on('click', () => {
-          del('/session').then(() => location = '/login')
+          del('/session').then(() => location = '/login');
         });
 
         $('.idp').on('click', () => {
