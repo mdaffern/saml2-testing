@@ -8,7 +8,7 @@ mergeContext()
       context.sp.httpServer.start()
     ]);
 
-    console.log('fake-sp listening for http on %s', context.sp.httpServer.info.uri);
-    console.log('fake-idp listening for http on %s', context.idp.httpServer.info.uri);
+    console.log('Service Provider listening for http on %s', context.sp.httpServer.info.uri);
+    console.log('Identity Provider listening for http on %s', context.idp.httpServer.info.uri);
     replify('saml2-testing', context);
   });
