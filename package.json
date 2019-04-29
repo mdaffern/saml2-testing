@@ -1,7 +1,7 @@
 {
   "name": "saml2-testing",
   "version": "0.1.0",
-  "description": "Cli tools that test various aspects of saml2 integrations",
+  "description": "Webapps and cli tools that test various aspects of saml2 integrations, built with Hapi.js, Boostrap, and Typescript",
   "scripts": {
     "lint": "tslint --project . --format msbuild",
     "test": "lab",
