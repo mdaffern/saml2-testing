@@ -22,10 +22,10 @@ function makeUsersDao() {
 
   const userDao: Dao<User> = {
     findOne(p) {
-      return findOne(users.values(), p);
+      return findOne(usersMap.values(), p);
     },
     findAll(p) {
-      return [...filter(users.values(), p)];
+      return [...filter(usersMap.values(), p)];
     },
     add(user) {
       usersMap.set(user.uuid, user);
