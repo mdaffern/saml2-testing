@@ -13,7 +13,7 @@
     "validate": "npm ls"
   },
   "author": "Griffingj",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/hapi": "^18.0.1",
