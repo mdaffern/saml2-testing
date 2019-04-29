@@ -28,7 +28,6 @@ export async function boot(): Promise<IdpContext> {
   const idpBinding = await makeIdpBinding();
   const ssoRoutes = makeSsoRoutes(idpBinding.idp);
   const sessionRoutes = makeSessionRoutes(db, idpBinding);
-
   const httpServer = await makeServer([...ssoRoutes, ...sessionRoutes], 7001, db, 'idp');
 
   return {

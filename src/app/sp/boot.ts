@@ -17,7 +17,7 @@ export async function boot(): Promise<SpContext> {
   const spBinding = await makeSpBinding(db);
   const ssoRoutes = makeSsoRoutes(db, spBinding.sp);
   const sessionRoutes = makeSessionRoutes(db, spBinding);
-  const httpServer = await makeServer([...ssoRoutes, ...sessionRoutes], 8080, db, 'sp');
+  const httpServer = await makeServer([...ssoRoutes, ...sessionRoutes], 8070, db, 'sp');
 
   return {
     sp: {
