@@ -108,11 +108,42 @@
 
       .icon {
         border-radius: 5px;
+        margin: 5px;
         cursor: pointer;
       }
 
       html {
         font-size: 20px;
+      }
+
+      .integration {
+        display: flex;
+        justify-content: center;
+      }
+
+      .vw {
+        background-image: url(https://vestwell.com/images/logo-vestwell.svg);
+        height: 100px;
+        width: 100px;
+        background-color: cornsilk;
+        background-size: 197px 150px;
+        background-position: -48px 16px;
+        background-repeat: no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .vw > p {
+        margin: 0;
+      }
+
+      .nll {
+        background-color: darkcyan;
+      }
+
+      .nlqa {
+        background-color: antiquewhite;
       }
     </style>
     <script>
@@ -135,6 +166,10 @@
         $('.nll').on('click', () => {
           document.getElementById('nllForm').submit();
         });
+
+        $('.nlqa').on('click', () => {
+          document.getElementById('nlqaForm').submit();
+        });
       })
     </script>
   </head>
@@ -153,8 +188,15 @@
         <main role="main" class="inner cover">
           <h1 class="cover-heading">Idp Resource</h1>
           <p class="lead"><strong>You're authenticated</strong><br /> and now you can go elsewhere!</p>
-          <img class="sp1 icon" src="/static/service-provider.png" width="100px">
-          <img class="nll icon" src="https://vestwell.com/images/logo-vestwell.svg" width="120px">
+          <div class="integration">
+            <img class="sp1 icon" src="/static/service-provider.png" width="100px" height="100px">
+            <div class="nll vw icon">
+              <p>Local</p>
+            </div>
+            <div class="nlqa vw icon">
+              <p>QA</p>
+            </div>
+          </div>
         </main>
         <footer class="mastfoot mt-auto">
           <div class="inner">
@@ -167,6 +209,9 @@
       </form>
       <form id="nllForm" style="display: none;" action="<%- nllResp.url %>" method="POST">
         <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- nllResp.SAMLResponse %>">
+      </form>
+      <form id="nlqaForm" style="display: none;" action="<%- nlqaResp.url %>" method="POST">
+        <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- nlqaResp.SAMLResponse %>">
       </form>
   </body>
 </html>

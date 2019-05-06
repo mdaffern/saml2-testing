@@ -94,9 +94,16 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
             request.state['idp-sid'].id,
             {});
 
-          const [sp1Resp, nllResp] = await Promise.all([
+          const nlqaPromise = idp.produceSuccessResponse(
+            spMap.get('https://qa1-voya-signin.vestwell.com')!,
+            secret,
+            request.state['idp-sid'].id,
+            {});
+
+          const [sp1Resp, nllResp, nlqaResp] = await Promise.all([
             sp1Promise,
-            nllPromise
+            nllPromise,
+            nlqaPromise
           ]);
 
           const renderParams = {
@@ -107,6 +114,10 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
             nllResp: {
               SAMLResponse: nllResp.formBody.SAMLResponse,
               url: format(nllResp.url)
+            },
+            nlqaResp: {
+              SAMLResponse: nllResp.formBody.SAMLResponse,
+              url: format(nlqaResp.url)
             }
           };
           return h.view('idp-resource.ejs', renderParams);
