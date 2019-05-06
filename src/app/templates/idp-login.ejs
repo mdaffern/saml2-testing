@@ -118,28 +118,21 @@
       }
 
       $(() => {
-        if (location.search) {
-          const kvs = location.search.replace(/[?&]/g, ' ').trim().split(' ');
-          const samlReqId = new Map(kvs.map(kv => kv.split('='))).get('samlReqId');
-
-          if (samlReqId) {
-            const input = '<input type="text" class="hidden" id="samlReqId" name="samlReqId" value="' + samlReqId + '">';
-            $('.form-signin').append(input);
-          }
-        }
-
         $('.btn.login').on('click', () => {
           const username = $('#username').val();
           const password = $('#password').val();
 
           let samlReqId;
+          let entityId;
 
           if (location.search) {
             const kvs = location.search.replace(/[?&]/g, ' ').trim().split(' ');
-            samlReqId = new Map(kvs.map(kv => kv.split('='))).get('samlReqId');
+            const queryMap = new Map(kvs.map(kv => kv.split('=')));
+            samlReqId = queryMap.get('samlReqId');
+            entityId = queryMap.get('entityId');
           }
 
-          post('/session', { username, password, samlReqId })
+          post('/session', { username, password, samlReqId, entityId })
             .then(resp => {
               if (resp.redirected && resp.url && resp.status < 400) {
                 location = resp.url;

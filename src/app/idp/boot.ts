@@ -1,13 +1,9 @@
-import * as qs from 'querystring';
-import Axios from 'axios';
 import { CommonContext, SamlConfig, SamlResponse } from '../common-types';
-import { format } from 'url';
 import { makeDb } from '../db/db';
 import { makeIdpBinding } from './idp-binding';
 import { makeServer } from '../http/http';
 import { makeSessionRoutes } from './session-routes';
 import { makeSsoRoutes } from './sso-routes';
-import { secret } from '../app-const';
 
 export interface IdpInterface {
   consumePostAuthnRequest(formParams: any): Promise<any>;
@@ -19,7 +15,6 @@ export interface IdpInterface {
 export interface IdpContext {
   idp: {
     identityProvider: IdpInterface;
-    sendAssertion(entityId: string): Promise<any>;
   } & CommonContext;
 }
 
@@ -34,24 +29,7 @@ export async function boot(): Promise<IdpContext> {
     idp: {
       identityProvider: idpBinding.idp,
       db,
-      httpServer,
-      sendAssertion(nameId = 'e69da125-4e1b-423c-ba92-1252c28a3066') {
-        const attributes = db.users.findOne(u => u.uuid == nameId);
-        // This is for the flow where the sp sends an authn request first
-        // this would be used to correlate request with response
-        // this matches the hardcoded default respondToId in fake-sp
-        const respondToId = secret;
-
-        return idpBinding.idp
-          .produceSuccessResponse(idpBinding.spConfig, respondToId, nameId, attributes)
-          .then((samlResp) => {
-            return Axios.post(format(samlResp.url), qs.stringify(samlResp.formBody), {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-            });
-          });
-      }
+      httpServer
     }
   };
 }

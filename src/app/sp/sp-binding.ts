@@ -6,10 +6,10 @@ import { secret } from '../app-const';
 import { ServiceProvider } from '@socialtables/saml-protocol';
 
 const resourcePath = path.join(__dirname, '..', '..', '..', 'resources');
-const idpMetaPath = path.join(resourcePath, 'idp1', 'idp-metadata.xml');
-const idpKeyPath = path.join(resourcePath, 'idp1', 'key.pem');
-const spMetaPath = path.join(resourcePath, 'sp1', 'sp-metadata.xml');
-const spKeyPath = path.join(resourcePath, 'sp1', 'key.pem');
+const idpMetaPath = path.join(resourcePath, 'identityProviders', 'idp1', 'idp-metadata.xml');
+const idpKeyPath = path.join(resourcePath, 'identityProviders', 'idp1', 'key.pem');
+const spMetaPath = path.join(resourcePath, 'serviceProviders', 'sp1', 'sp-metadata.xml');
+const spKeyPath = path.join(resourcePath, 'serviceProviders', 'sp1', 'key.pem');
 
 export interface SpInterface {
   produceAuthnRequest(idp: SamlConfig): Promise<any>;
@@ -51,7 +51,7 @@ export async function makeSpBinding(db: Db): Promise<SpBinding> {
       if (secret == requestId) { // this matches the hardcoded default respondToId
         return Promise.resolve();
       }
-
+      // _548851ece455ad159dcffcc20a8a4eb09a9d30ba1f
       if (idpConfig && deepEqual(idpConfig, db.ssoRequests.get(requestId))) {
         return Promise.resolve();
       }

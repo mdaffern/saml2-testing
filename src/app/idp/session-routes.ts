@@ -12,7 +12,7 @@ import {
   } from '../common-types';
 
 export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
-  const { idp, spConfig } = idpb;
+  const { idp, spMap } = idpb;
   return [
     {
       method: 'GET',
@@ -39,13 +39,14 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
         auth: false,
         tags: ['api', 'session'],
         async handler(request, h) {
-          const { username, password, samlReqId } = request.payload;
+          const { username, password, samlReqId, entityId } = request.payload;
           const user = db.users.findOne(u => u.email === username);
 
           if (user && hashAny(password) === user.hashword) {
             request.cookieAuth.set({ id: user.uuid });
 
-            if (samlReqId) {
+            if (samlReqId && entityId) {
+              const spConfig = spMap.get(decodeURIComponent(entityId))!;
               const samlResp = await idp.produceSuccessResponse(spConfig, samlReqId, user.uuid, {});
               db.sessionStorage.set(user.uuid, samlResp);
               return h.redirect('/saml-bounce');
@@ -59,7 +60,8 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
           payload: Joi.object({
             username: Joi.string().email().example('name1@email.tld'),
             password: Joi.string().example('password1'),
-            samlReqId: Joi.string().optional()
+            samlReqId: Joi.string().optional(),
+            entityId: Joi.string().optional()
           })
         }
       }
@@ -80,16 +82,34 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
       path: '/resource',
       options: {
         async handler(request, h: any) {
-          const resp: SamlResponse = await idp.produceSuccessResponse(
-            idpb.spConfig,
+          const sp1Promise = idp.produceSuccessResponse(
+            spMap.get('https://sub.domain.tld')!,
             secret,
             request.state['idp-sid'].id,
             {});
 
-          return h.view('idp-resource.ejs', {
-            SAMLResponse: resp.formBody.SAMLResponse,
-            url: format(resp.url)
-          });
+          const nllPromise = idp.produceSuccessResponse(
+            spMap.get('https://local.sp.vestwell.com')!,
+            secret,
+            request.state['idp-sid'].id,
+            {});
+
+          const [sp1Resp, nllResp] = await Promise.all([
+            sp1Promise,
+            nllPromise
+          ]);
+
+          const renderParams = {
+            sp1Resp: {
+              SAMLResponse: sp1Resp.formBody.SAMLResponse,
+              url: format(sp1Resp.url)
+            },
+            nllResp: {
+              SAMLResponse: nllResp.formBody.SAMLResponse,
+              url: format(nllResp.url)
+            }
+          };
+          return h.view('idp-resource.ejs', renderParams);
         }
       }
     },

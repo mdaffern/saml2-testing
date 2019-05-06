@@ -106,12 +106,9 @@
         }
       }
 
-      .idp {
-        cursor: pointer;
-      }
-
       .icon {
         border-radius: 5px;
+        cursor: pointer;
       }
 
       html {
@@ -131,8 +128,12 @@
           del('/session').then(() => location = '/login');
         });
 
-        $('.idp').on('click', () => {
-          document.getElementById('SamlForm').submit();
+        $('.sp1').on('click', () => {
+          document.getElementById('sp1Form').submit();
+        });
+
+        $('.nll').on('click', () => {
+          document.getElementById('nllForm').submit();
         });
       })
     </script>
@@ -152,7 +153,8 @@
         <main role="main" class="inner cover">
           <h1 class="cover-heading">Idp Resource</h1>
           <p class="lead"><strong>You're authenticated</strong><br /> and now you can go elsewhere!</p>
-          <img class="idp icon" src="/static/service-provider.png" width="100px">
+          <img class="sp1 icon" src="/static/service-provider.png" width="100px">
+          <img class="nll icon" src="https://vestwell.com/images/logo-vestwell.svg" width="120px">
         </main>
         <footer class="mastfoot mt-auto">
           <div class="inner">
@@ -160,8 +162,11 @@
           </div>
         </footer>
       </div>
-      <form id="SamlForm" style="display: none;" action="<%- url %>" method="POST">
-        <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- SAMLResponse %>">
+      <form id="sp1Form" style="display: none;" action="<%- sp1Resp.url %>" method="POST">
+        <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- sp1Resp.SAMLResponse %>">
+      </form>
+      <form id="nllForm" style="display: none;" action="<%- nllResp.url %>" method="POST">
+        <input type="text" name="SAMLResponse" id="SAMLResponse" value="<%- nllResp.SAMLResponse %>">
       </form>
   </body>
 </html>

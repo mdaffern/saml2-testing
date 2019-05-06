@@ -19,17 +19,4 @@
     <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
     <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8070/sso/saml2/login" index="1"/>
   </md:SPSSODescriptor>
-  <md:Organization>
-    <md:OrganizationName xml:lang="en-US">org_name</md:OrganizationName>
-    <md:OrganizationDisplayName xml:lang="en-US">org display name</md:OrganizationDisplayName>
-    <md:OrganizationURL xml:lang="en-US">https://sub.domain.tld</md:OrganizationURL>
-  </md:Organization>
-  <md:ContactPerson contactType="technical">
-    <md:GivenName>tech name</md:GivenName>
-    <md:EmailAddress>tech.email@domain.tld</md:EmailAddress>
-  </md:ContactPerson>
-  <md:ContactPerson contactType="support">
-    <md:GivenName>support name</md:GivenName>
-    <md:EmailAddress>support.email@domain.tld</md:EmailAddress>
-  </md:ContactPerson>
 </md:EntityDescriptor>

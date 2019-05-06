@@ -11,7 +11,10 @@ export function makeSsoRoutes(identityProvider: IdpInterface) {
         return identityProvider
           .consumeRedirectAuthnRequest(request.query)
           .then((resp) => {
-            return h.redirect('/login?' + Qs.stringify({ samlReqId: resp.requestID }));
+            return h.redirect('/login?' + Qs.stringify({
+              samlReqId: resp.requestID,
+              entityId: resp.sp.entityID
+            }));
           });
       },
       options: {

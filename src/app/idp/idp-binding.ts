@@ -1,13 +1,14 @@
+import * as _glob from 'glob';
 import * as path from 'path';
 import { configFromFiles } from '../saml/parse-saml';
 import { IdentityProvider } from '@socialtables/saml-protocol';
+import { promisify } from 'util';
 import { SamlConfig, SamlResponse } from '../common-types';
 
+const glob = promisify(_glob);
 const resourcePath = path.join(__dirname, '..', '..', '..', 'resources');
-const idpMetaPath = path.join(resourcePath, 'idp1', 'idp-metadata.xml');
-const idpKeyPath = path.join(resourcePath, 'idp1', 'key.pem');
-const spMetaPath = path.join(resourcePath, 'sp1', 'sp-metadata.xml');
-const spKeyPath = path.join(resourcePath, 'sp1', 'key.pem');
+const idpMetaPath = path.join(resourcePath, 'identityProviders', 'idp1', 'idp-metadata.xml');
+const idpKeyPath = path.join(resourcePath, 'identityProviders', 'idp1', 'key.pem');
 
 export interface IdpInterface {
   consumePostAuthnRequest(formParams: any): Promise<any>;
@@ -19,18 +20,18 @@ export interface IdpInterface {
 export interface IdpBinding {
   idp: IdpInterface;
   idpConfig: SamlConfig;
-  spConfig: SamlConfig;
+  spMap: Map<string, SamlConfig>;
 }
 
+// Only one pair of these because we are a service provider
 export async function makeIdpBinding(): Promise<IdpBinding> {
-  const [idp, sp] = await Promise.all([
+  const [idp, spPaths] = await Promise.all([
     configFromFiles(idpMetaPath, idpKeyPath, 'idp'),
-    configFromFiles(spMetaPath, spKeyPath, 'sp')
+    glob(resourcePath + '/serviceProviders/**/sp-metadata.xml')
   ]);
-
-  const spLookup = new Map<string, SamlConfig>([
-    [sp.entityID, sp]
-  ]);
+  const sps = await Promise.all(spPaths.map(p => configFromFiles(p, undefined, 'sp')));
+  const spLookup = new Map<string, SamlConfig>();
+  sps.forEach(sp => spLookup.set(sp.entityID, sp));
 
   const idpObj = new IdentityProvider(idp, {
     getServiceProvider(entityId) {
@@ -47,7 +48,7 @@ export async function makeIdpBinding(): Promise<IdpBinding> {
   return {
     idp: idpObj,
     idpConfig: idp,
-    spConfig: sp
+    spMap: spLookup
   };
 }
 

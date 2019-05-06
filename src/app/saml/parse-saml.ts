@@ -62,10 +62,16 @@ function metadataToConfig(metadata, privateKey, kind: Kind): SamlConfig {
 }
 
 export function configFromFiles(metadataPath, privateKeyPath, kind: Kind) {
+  let privateKeyPromise: Promise<any> = Promise.resolve(undefined);
+
+  if (privateKeyPath) {
+    privateKeyPromise = readFile(privateKeyPath).then((b) => b.toString());
+  }
+
   return Promise
     .all([
       parseXml(metadataPath),
-      readFile(privateKeyPath).then((b) => b.toString())
+      privateKeyPromise
     ])
     .then(([metadataJson, privateKey]) => {
       return metadataToConfig(metadataJson, privateKey, kind);
