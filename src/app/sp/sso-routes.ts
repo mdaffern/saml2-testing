@@ -12,7 +12,7 @@ export function makeSsoRoutes(db: Db, serviceProvider: SpInterface): ServerRoute
         auth: false,
         handler(request, h) {
           return serviceProvider
-            .consumeRedirectResponse(request.payload)
+            .consumePostResponse(request.payload)
             .then((resp: SamlResponseUnpacked) => {
               const user = db.users.findOne(u => u.uuid === resp.nameID);
               (request as any).cookieAuth.set({ id: user.uuid });

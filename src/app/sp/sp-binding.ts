@@ -13,7 +13,7 @@ const spKeyPath = path.join(resourcePath, 'serviceProviders', 'sp1', 'key.pem');
 
 export interface SpInterface {
   produceAuthnRequest(idp: SamlConfig): Promise<any>;
-  consumePostResponse(formParams: any): Promise<void>;
+  consumePostResponse(formParams: any): Promise<SamlResponseUnpacked>;
   consumeRedirectResponse(queryParams: any): Promise<SamlResponseUnpacked>;
 }
 
