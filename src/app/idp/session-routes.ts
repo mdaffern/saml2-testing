@@ -116,7 +116,7 @@ export function makeSessionRoutes(db: Db, idpb: IdpBinding) {
               url: format(nllResp.url)
             },
             nlqaResp: {
-              SAMLResponse: nllResp.formBody.SAMLResponse,
+              SAMLResponse: nlqaResp.formBody.SAMLResponse,
               url: format(nlqaResp.url)
             }
           };
